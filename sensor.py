@@ -1,11 +1,6 @@
 from enum import Enum
-import pressao
-
-# When I uncomment this section below, code works. That's all the code in pressao.py
-"""class Pressao(Enum):
-    NORMAL = 0
-    BAIXA = 1
-    ALTA = 2"""
+from pressao import Pressao
+import random
 
 class Sensor:
     """Classe responsavel pela definicao dos sensores.
@@ -19,16 +14,9 @@ def __init__(self, bmp, movimento, pressao):
     self.movimento = bool(movimento)
     self.pressao = pressao
 
-a = Sensor()
-
-#Says object takes no parameters in python3 and constructor takes no arguments in python 2
-foo = Sensor(100, True, "bar")
-
-a.bmp = 100
-print(a.bmp)
-
-#Says Pressao is not defined. However, if I uncomment the code above, it does work.
-a.pressao = Pressao.NORMAL
-print( a.pressao)
+def getValores(self):
+    self.bmp = random.randint(30, 140)
+    self.movimento = bool(random.randint(0,1))
+    self.pressao = Pressao(random.randint(0,2))
 
 
