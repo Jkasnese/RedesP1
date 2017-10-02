@@ -6,7 +6,8 @@
 import socket
 socket.error
 import sys
-from thread import *
+from threading import Thread
+import atexit
 
 HOST = ''   # Symbolic name, meaning all available interfaces. Quando põe nome não roda, não entendi pq.
 PORT = 8888 # Arbitrary non-privileged port
@@ -20,10 +21,10 @@ try:
     bocal = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 except socket.error as msg:
-    print 'Nao foi possivel criar o socket. ERro: ' + str(msg[0]) + ' , Mensagem: ' + msg[1]
+    print ('Nao foi possivel criar o socket. ERro: ' + str(msg[0]) + ' , Mensagem: ' + msg[1])
     sys.exit();
 
-print "Socket criado!"
+print ("Socket criado!")
 
 #   - - - Atribuindo dados ao socket - - - 
 
@@ -32,20 +33,21 @@ try:
     bocal.bind((HOST, PORT))
 
 except socket.error as msg:
-    print 'Erro na atribuicao. Codigo: ' + str(msg[0]) + ' Mensagem: ' + msg[1]
+    print ('Erro na atribuicao. Codigo: ' + str(msg[0]) + ' Mensagem: ' + msg[1])
     sys.exit()
 
-print "Atribuido porta e nome!"
+print ("Atribuido porta e nome!")
 
 #   - - - - Criando "fila", começando a ouvir - - - 
 
 # Fazer o socket começar a ouvir. Fila máxima de 3 conexões.
 bocal.listen(3)
 
-print "Bocal eh boca mas ta ouvindo!"
+print ("Bocal eh boca mas ta ouvindo!")
 
 # Definindo uma funcao pra trabalhar com multiplas threads
 
+@atexit.register
 def clienteThread(conn):
     # Mandar msg a todo cliente que se conectar
     conn.send("Ola mundo! Bem vindo ao servidor que não faz nada! Vamos conversar!\n")
@@ -70,10 +72,11 @@ def clienteThread(conn):
 while True:
     # Aguardando ligacoes
     conn, addr = bocal.accept()
-    print "Nova conexão! " + addr[0] + ':' + str(addr[1])
+    print ("Nova conexão! " + addr[0] + ':' + str(addr[1]))
 
     # Os argumentos de começar uma nova thread é a função e sua lista de argumentos.
     # Os argumentos da função tem que vir em formato de tupla. Creio que pq tupla é imutável.
-    start_new_thread(clienteThread, (conn,))
+    thread_novo_cliente = Thread(target = clienteThread)
+    thread_novo_cliente.start()
 
 bocal.close()

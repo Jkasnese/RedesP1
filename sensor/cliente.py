@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-import _thread
+from threading import Thread
 
 #Achar jeito melhor pra importar
 import sys
@@ -29,18 +29,21 @@ def enviarValores(sensor):
     A partir dai, envia os valores definidos pelo usuario"""
 
     while(True):
-        time.sleep(2)
+        print("Entrou no loopenviar")
+        time.sleep(1)
         if (novoSensor.modificado == False):
             selecionaValores(sensor)
             novoSensor.gerarValores()
         else:
             selecionaValores(sensor)
+            print("Modificou!")
             break; 
 
 def novoSensor():
     novoSensor = Sensor('Buba')
     novoSensor.gerarValores()
-    _thread.start_new_thread(enviarValores, (novoSensor,))
+    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor,))
+    threadEnviaValores.start()
     return novoSensor 
 
 
@@ -48,6 +51,8 @@ def novoSensor():
 
 #Criando Sensor
 novoSensor = novoSensor()
+
+
 
 # Modificando e enviando
 time.sleep(10)
