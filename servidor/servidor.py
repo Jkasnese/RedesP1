@@ -11,15 +11,22 @@ from sensor import *
 class Servidor:
 
     def __init__(self):
-        self.sensores = []
-        self.medicos = []
-        socket = abrirSocketUDP()
+        self.sensores = {}
+        self.endereco_sensores = []
+        self.medicos = {}
+        self.endereco_medicos = []
+
+        self.socket = abrirSocketUDP()
         self.ouvirSocket(socket)
 
     def ouvirSocket(self, socket):
         while True:
             data, addr = socket.recvfrom(1024) # buffer size is 1024 bytes
             print ("Mensagem recebida:", data, "De: ", addr)
+            # Adiciona o sensor no dicionário de sensores
+            
+            # Adiciona endereço do sensor na lista de endereços
+            self.endereco_sensores.append(addr)
             
             
             
