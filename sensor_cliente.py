@@ -45,9 +45,11 @@ def cadastrarSensor(sensor):
     mensagem = "0" + sensor.cpf
     resposta = "1"
     while (resposta != "0"):
-        print ("Enviado: ", mensagem)
+        UDP_PORT = int(input("Digite a porta para recebimento: "))
         enviarUDP(UDP_IP, mensagem)
-        resposta = ouvirUDP(abrirSocketUDP())
+        print ("Enviado: ", mensagem)
+        resposta = ouvirUDP(abrirSocketUDP(UDP_PORT))
+        print("Resposta: ", resposta)
 
 def novoSensor():
     cpf = input("Digite o CPF do sensor: ")

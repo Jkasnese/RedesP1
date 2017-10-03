@@ -47,7 +47,8 @@ class Servidor:
         
         # Resposta ao cadastro
         print(type(endereço))
-        enviarUDP(endereço, "0")
+        resposta = '0'
+        enviarUDP(endereço, resposta)
         
         
 
