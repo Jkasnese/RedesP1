@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from enum import Enum
-from pressao import Pressao
+from sensor_pressao import *
 import random
 
 # Precisa mudar a pressao pra valores?
@@ -15,15 +15,14 @@ class Sensor:
         int bmp
         bool movimento
         Pressao pressao
-        String nome
         bool modificado
 
        Atributos estaticos ou da classe:
         ID"""
 
-    def __init__(self, nome):
+    def __init__(self, cpf):
         self.id = 0
-        self.nome = nome
+        self.cpf = cpf
         self.bpm = random.randint(30, 140)
         self.movimento = bool(random.randint(0,1))
         self.pressao = Pressao(random.randint(0,2))

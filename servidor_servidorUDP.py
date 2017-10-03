@@ -3,7 +3,7 @@ import socket
 UDP_IP = "127.0.0.1"
 
 def abrirSocketUDP():
-    UDP_PORT = int(input("Digite a porta da comunicacao UDP"))
+    UDP_PORT = int(input("Digite a porta da comunicacao UDP: "))
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind((UDP_IP, UDP_PORT))
     return sock
