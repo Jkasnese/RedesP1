@@ -11,4 +11,6 @@
     ## resposta do servidor é (0) cadastrou, (1) não cadastrou
 
 # MENSAGEM SENSOR   
-    # DEMAIS MENSAGENS DO SENSOR SÃO "DADOS(1)|BPM|PRESSAO|MOVIMENTO"
+    # DEMAIS MENSAGENS DO SENSOR SÃO "DADOS(1)|ID|BPM|PRESSAO|MOVIMENTO"
+
+caracter_separador = ";"

@@ -3,10 +3,11 @@ import socket
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
 
-def enviarUDP(MESSAGE, UDP_IP, UDP_PORT):
+def enviarUDP(MESSAGE, UDP_IP, UDP_PORT=5005):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
     sock.sendto(str.encode(MESSAGE), (UDP_IP, UDP_PORT))
+    return sock
 
 def abrirSocketUDP(UDP_PORT=5005):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

@@ -3,6 +3,7 @@
 
 import socket
 import time
+from util_protocoloCom import *
 from util_comUDP import *
 from threading import Thread
 
@@ -19,10 +20,10 @@ UDP_IP = "127.0.0.1"
 def selecionaValores(sensor):
     #Imprimindo os sensores
     # Incluir função pra enviar ID depois print(sensor.id)
-    caracterSeperador = ';'
-    mensagem = str(sensor.bpm) + caracterSeparador
-    mensagem += str(sensor.movimento) + caracterSeparador
-    mensagem += str(sensor.pressao) + caracterSeparador
+    mensagem = str(sensor.identificador) + caracter_separador
+    mensagem += str(sensor.bpm) + caracter_separador
+    mensagem += str(sensor.pressao.value) + caracter_separador
+    mensagem += str(sensor.movimento) + caracter_separador
     return mensagem
 
 
@@ -30,26 +31,28 @@ def enviarValores(sensor):
     """ Envia valores aleatorios continuamente ate o usuario modificar o valor.
     A partir dai, envia os valores definidos pelo usuario"""
 
+    # Comando p/ atualizar dados do sensor
+    mensagem = "1"    
     while(True):
-        print("Entrou no loopenviar")
         time.sleep(1)
         if (novoSensor.modificado == False):
             novoSensor.gerarValores()
-            enviarUDP(UDP_IP, selecionaValores(sensor))
-        else:
-            enviarUDP(UDP_IP, selecionaValores(sensor))
-            # Remover esse breal depois
-            break; 
+        mensagem = "1" + selecionaValores(sensor)
+        enviarUDP(mensagem, UDP_IP)
+        print("Enviado: ", mensagem)
 
 def cadastrarSensor(sensor):
-    mensagem = "0" + sensor.cpf
+    # Define mensagem de cadastro
+    mensagem = "0" + sensor.cpf + ";" + sensor.identificador
     resposta = "1"
     while (resposta != "0"):
-        UDP_PORT = int(input("Digite a porta para recebimento: "))
-        enviarUDP(UDP_IP, mensagem)
+        # Envia msg e retorna o socket de envio
+        bocal = enviarUDP(mensagem, UDP_IP)
         print ("Enviado: ", mensagem)
-        resposta = ouvirUDP(abrirSocketUDP(UDP_PORT))
+        # Aguarda resposta neste bocal
+        resposta, endereço = ouvirUDP(bocal)
         print("Resposta: ", resposta)
+        print("De: " + endereço[0] + ";" + str(endereço[1]))
 
 def novoSensor():
     cpf = input("Digite o CPF do sensor: ")
@@ -59,8 +62,8 @@ def novoSensor():
     cadastrarSensor(novoSensor)
     print("Sensor cadastrado!")
     # Depois de cadastrado, começar a enviar valores
-    #threadEnviaValores = Thread(target = enviarValores, args = (novoSensor,))
-    #threadEnviaValores.start()
+    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor,))
+    threadEnviaValores.start()
     return novoSensor
 
 
@@ -69,12 +72,3 @@ def novoSensor():
 
 #Criando Sensor
 novoSensor = novoSensor()
-
-# Modificando e enviando
-time.sleep(2)
-novoSensor.set_Valores(100, 0, 2)
-enviarValores(novoSensor)
-
-
-
-

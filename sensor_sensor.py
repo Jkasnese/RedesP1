@@ -4,6 +4,7 @@
 from enum import Enum
 from sensor_pressao import *
 import random
+import uuid
 
 # Precisa mudar a pressao pra valores?
 # Falta criar ID unico atraves de uma rede network
@@ -20,8 +21,8 @@ class Sensor:
        Atributos estaticos ou da classe:
         ID"""
 
-    def __init__(self, cpf):
-        self.id = 0
+    def __init__(self, cpf, identificador=str(uuid.uuid4()) ):
+        self.identificador = identificador
         self.cpf = cpf
         self.bpm = random.randint(30, 140)
         self.movimento = bool(random.randint(0,1))
