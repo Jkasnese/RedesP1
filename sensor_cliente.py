@@ -35,8 +35,8 @@ def enviarValores(sensor):
     mensagem = "1"    
     while(True):
         time.sleep(1)
-        if (novoSensor.modificado == False):
-            novoSensor.gerarValores()
+        if (sensor.modificado == False):
+            sensor.gerarValores()
         mensagem = "1" + selecionaValores(sensor)
         enviarUDP(mensagem, UDP_IP)
         print("Enviado: ", mensagem)
@@ -63,6 +63,7 @@ def novoSensor():
     print("Sensor cadastrado!")
     # Depois de cadastrado, começar a enviar valores
     threadEnviaValores = Thread(target = enviarValores, args = (novoSensor,))
+    threadEnviaValores.daemon = True
     threadEnviaValores.start()
     return novoSensor
 
@@ -71,4 +72,5 @@ def novoSensor():
 ###Teste
 
 #Criando Sensor
-novoSensor = novoSensor()
+#novoSensor = novoSensor()
+#print("Novo sensor BPM: " + novoSensor.bpm)

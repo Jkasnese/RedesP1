@@ -69,7 +69,7 @@ class Servidor:
         identificador = mensagem[0]
         self.sensores[identificador].bpm = mensagem[1]
         self.sensores[identificador].pressao = int(mensagem[2])
-        self.sensores[identificador].movimento = mensagem[3]
+        self.sensores[identificador].movimento = bool("True" == mensagem[3])
         print("Atualizando sensor: " + identificador)
         print("BPM: " + self.sensores[identificador].bpm + " Pressao: " + str(self.sensores[identificador].pressao) + " Movimento: " + str(self.sensores[identificador].movimento))
         

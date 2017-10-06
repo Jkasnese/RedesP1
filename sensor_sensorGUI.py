@@ -1,14 +1,17 @@
 from tkinter import Tk, Label, Button, LEFT, RIGHT, W, IntVar
+from sensor_cliente import *
+from threading import Thread
 
 class MyFirstGUI:
     def __init__(self, master):
         self.master = master
+
         master.title("GUI do Sensor")
 
         # Variaveis do Sensor
-        self.bpm = 123;
-        self.movimentando = False;
-        self.pressao = 2;
+        #threadSensor = Thread(target = novoSensor(),)
+        #threadSensor.start()
+        self.sensor = novoSensor()
 
         # Label principal
         self.label = Label(master, text="Configurações do Sensor:")
@@ -20,7 +23,7 @@ class MyFirstGUI:
 
         # Valor BPM e Label_Valor_BPM
         self.valor_bpm_label_num = IntVar()
-        self.valor_bpm_label_num.set(self.bpm)
+        self.valor_bpm_label_num.set(self.sensor.bpm)
         self.valor_bpm_label = Label(master, textvariable=self.valor_bpm_label_num)
         self.valor_bpm_label.grid(row=1, column=1)
 
@@ -31,12 +34,14 @@ class MyFirstGUI:
         self.decrementar_bpm_button = Button(master, text="\\/", command=self.decrementarBPM)
         self.decrementar_bpm_button.grid(row=1, column=3)
 
+        # # # # MOVIMENTO # # # #
+
         # Label movimento
         self.movimento_label = Label(master, text="Movimentando:")
         self.movimento_label.grid(row=2, column=0, sticky=W)
 
         # Valor Movimento e Label_Valor_Movimento
-        if (True == self.movimentando):
+        if (True == self.sensor.movimento):
             self.valor_movimento_label = Label(master, text="SIM!")
         else:
             self.valor_movimento_label = Label(master, text="NÃO!")
@@ -54,52 +59,66 @@ class MyFirstGUI:
         self.pressao_label.grid(row=3, column=0, sticky=W)
 
         # Valor Pressao e Label_Valor_Pressao
-        self.valor_pressao_label_num = IntVar()
-        self.valor_pressao_label_num.set(self.pressao)
-        self.valor_pressao_label = Label(master, textvariable=self.valor_pressao_label_num)
+        self.valor_pressao_label = Label(master, text=str(self.sensor.pressao))
         self.valor_pressao_label.grid(row=3, column=1)
 
         # Botão Incrementar Pressao
-        self.incrementar_pressao_button = Button(master, text="/\\", command=self.incrementar_pressao)
-        self.incrementar_pressao_button.grid(row=3, column=2)
+        self.pressao_baixa_button = Button(master, text="BAIXA", command=self.pressao_baixa)
+        self.pressao_baixa_button.grid(row=3, column=2)
 
         # Botão Decrementar Pressao
-        self.decrementar_pressao_button = Button(master, text="\\/", command=self.decrementar_pressao)
-        self.decrementar_pressao_button.grid(row=3, column=3)
+        self.pressao_normal_button = Button(master, text="NORMAL", command=self.pressao_normal)
+        self.pressao_normal_button.grid(row=3, column=3)
+
+        # Botão Pressao Alta
+        self.pressao_alta_button = Button(master, text="ALTA", command=self.pressao_alta)
+        self.pressao_alta_button.grid(row=3, column=4)
 
         # Botão fechar
         self.close_button = Button(master, text="Close", command=master.quit)
         self.close_button.grid(row=4, column=1, columnspan=1)
 
+        # Atualiza dados da interface
+            # FALTA FAZER            
+
     # # # Funções da classe # # #
 
+#    def atualizarValores(self):
+        # FALTA FAZER
+            
+
     def incrementarBPM(self):
-        self.bpm += 1
-        self.valor_bpm_label_num.set(self.bpm)
+        self.sensor.bpm += 1
+        self.valor_bpm_label_num.set(self.sensor.bpm)
         self.valor_bpm_label = Label(self.master, textvariable=self.valor_bpm_label_num)
 
     def decrementarBPM(self):
-        self.bpm -= 1
-        self.valor_bpm_label_num.set(self.bpm)
+        self.sensor.bpm -= 1
+        self.valor_bpm_label_num.set(self.sensor.bpm)
         self.valor_bpm_label = Label(self.master, textvariable=self.valor_bpm_label_num)
 
-    def incrementar_pressao(self):
-        self.pressao += 1
-        self.valor_pressao_label_num.set(self.pressao)
-        self.valor_pressao_label = Label(self.master, textvariable=self.valor_pressao_label_num)
+    def pressao_baixa(self):
+        self.sensor.pressao = 1
+        self.valor_pressao_label = Label(self.master, text=str(self.sensor.pressao))
+        self.valor_pressao_label.grid(row=3, column=1)
 
-    def decrementar_pressao(self):
-        self.pressao -= 1
-        self.valor_pressao_label_num.set(self.pressao)
-        self.valor_pressao_label = Label(self.master, textvariable=self.valor_pressao_label_num)
+    def pressao_normal(self):
+        self.sensor.pressao = 0
+        self.valor_pressao_label = Label(self.master, text=str(self.sensor.pressao))
+        self.valor_pressao_label.grid(row=3, column=1)
+
+    def pressao_alta(self):
+        self.sensor.pressao = 2
+        self.valor_pressao_label = Label(self.master, text=str(self.sensor.pressao))
+        self.valor_pressao_label.grid(row=3, column=1)
 
     def movimentar(self):
-        self.movimentando = True
+        self.sensor.movimento = True
         self.valor_movimento_label = Label(self.master, text="SIM!")
         self.valor_movimento_label.grid(row=2, column=1)
 
     def parar(self):
-        self.movimentando = False
+        self.sensor.movimento = False
         self.valor_movimento_label = Label(self.master, text="NÃO!")
         self.valor_movimento_label.grid(row=2, column=1)
 
