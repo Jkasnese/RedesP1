@@ -41,10 +41,10 @@ class Servidor:
         thread_ouvir_TCP = Thread(target = self.receber_mensagem, args=(bocal, endereço))
         thread_ouvir_TCP.start()
 
-    def receber_mensagem(self, socket, endereço=('','')):
+    def receber_mensagem(self, bocal, endereço=('','')):
         print("Dentro de receber_msg: " + str(endereço))
         while True:
-            mensagem, addr = ouvir_socket(socket)
+            mensagem, addr = ouvir_socket(bocal)
             print("Recebido: ", mensagem, end="|")       
             # Caso seja UDP ele recebeu msg,endereço. Caso seja TCP recebeu só msg. Diferenciar:
             if (None == addr):
@@ -58,7 +58,7 @@ class Servidor:
 
             print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
             if ('0' == mensagem[0]):
-                self.cadastrarSensor(mensagem[1:], endIP, porta)
+                self.cadastrarSensor(mensagem[1:], endIP, porta, bocal)
             elif ('1' == mensagem[0]):
                 self.atualizarSensor(mensagem[1:])
             elif ('2' == mensagem[0]):
@@ -68,7 +68,7 @@ class Servidor:
             else:
                 self.repitaMensagem(endIP, porta)
 
-    def cadastrarSensor(self, mensagem, endereço, porta):
+    def cadastrarSensor(self, mensagem, endereço, porta, bocal):
         # Separa o CPF do ID        
         cpf = mensagem.split(caracter_separador)
         identificador = cpf[1]
@@ -89,7 +89,7 @@ class Servidor:
         
         # Resposta ao cadastro
         resposta = '0'
-        enviarUDP(resposta, endereço, porta)
+        enviarTCP(resposta, bocal)
         print("Enviado: " + resposta + " p/: " + endereço_completo)
         
     def atualizarSensor(self, mensagem):
