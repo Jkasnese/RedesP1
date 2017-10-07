@@ -50,7 +50,7 @@ def cadastrarSensor(sensor):
         bocal = enviarUDP(mensagem, UDP_IP)
         print ("Enviado: ", mensagem)
         # Aguarda resposta neste bocal
-        resposta, endereço = ouvirUDP(bocal)
+        resposta, endereço = ouvir_socket(bocal)
         print("Resposta: ", resposta)
         print("De: " + endereço[0] + ";" + str(endereço[1]))
 

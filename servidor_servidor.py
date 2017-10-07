@@ -4,32 +4,61 @@ from util_comUDP import *
 from sensor_sensor import *
 from threading import Thread
 from util_protocoloCom import *
+from queue import Queue
 
 #import comunicacaoTCP
 
 class Servidor:
 
     def __init__(self):
+        # Dados
         self.sensores = {}
         self.id_sensores = []
         self.medicos = {}
         self.endereco_medicos = []
-        
-        self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
-        threadOuvir = Thread(target = self.ouvirSocketUDP, args = (self.socketUDP,))
-        threadOuvir.start()
 
-    def ouvirSocketUDP(self, socket):
+        # UDP
+        self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
+        threadOuvirUDP = Thread(target = self.receber_mensagem, args=(self.socketUDP,))
+        threadOuvirUDP.start()
+
+        # TCP
+        # Abrir bocal e ouvir até receber nova conexão
+        self.socketTCP = abrirSocketTCP(int(input("Digite a porta da comunicao TCP: ")))
+        self.socketTCP.listen(10)
+        # Ao receber nova conexão, aceita a conexão e coloca o socket desta na fila lista_conexoes
+        lista_conexoes = Queue()
+        thread_abrir_conexoes = Thread(target = aceitar_conexoes, args=(self.socketTCP, lista_conexoes))
+        thread_abrir_conexoes.start()
+        
+        # Socket é retirado da fila e passado para função de ouvir, p/ que servidor registre as mensagens do socket.
+        # Recebe tupla contendo socket e endereço
+        bocal = lista_conexoes.get()
+        print(bocal)
+        endereço = bocal[1]
+        bocal = bocal[0]
+        print("Antes de chamar receber_mensagem: " + str(endereço))
+        thread_ouvir_TCP = Thread(target = self.receber_mensagem, args=(bocal, endereço))
+        thread_ouvir_TCP.start()
+
+    def receber_mensagem(self, socket, endereço=('','')):
+        print("Dentro de receber_msg: " + str(endereço))
         while True:
-            mensagem, endereço = ouvirUDP(self.socketUDP)
-            print("Recebido: ", mensagem, end="|")        
-            print("De: ", endereço)
-            porta = endereço[1]
-            endereço = str(endereço[0])
+            mensagem, addr = ouvir_socket(socket)
+            print("Recebido: ", mensagem, end="|")       
+            # Caso seja UDP ele recebeu msg,endereço. Caso seja TCP recebeu só msg. Diferenciar:
+            if (None == addr):
+                print("De: ", endereço)
+                porta = endereço[1]
+                endIP = str(endereço[0])
+            else:
+                print("De: ", addr)
+                porta = addr[1]
+                endIP = str(addr[0])
 
             print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
             if ('0' == mensagem[0]):
-                self.cadastrarSensor(mensagem[1:], endereço, porta)
+                self.cadastrarSensor(mensagem[1:], endIP, porta)
             elif ('1' == mensagem[0]):
                 self.atualizarSensor(mensagem[1:])
             elif ('2' == mensagem[0]):
@@ -37,7 +66,7 @@ class Servidor:
             elif ('3' == mensagem[0]):
                 self.atualizarMedico(mensagem[1:])
             else:
-                self.repitaMensagem(endereço, porta)      
+                self.repitaMensagem(endIP, porta)
 
     def cadastrarSensor(self, mensagem, endereço, porta):
         # Separa o CPF do ID        
