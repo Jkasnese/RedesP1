@@ -34,15 +34,12 @@ class Servidor:
         # Socket é retirado da fila e passado para função de ouvir, p/ que servidor registre as mensagens do socket.
         # Recebe tupla contendo socket e endereço
         bocal = lista_conexoes.get()
-        print(bocal)
         endereço = bocal[1]
         bocal = bocal[0]
-        print("Antes de chamar receber_mensagem: " + str(endereço))
         thread_ouvir_TCP = Thread(target = self.receber_mensagem, args=(bocal, endereço))
         thread_ouvir_TCP.start()
 
     def receber_mensagem(self, bocal, endereço=('','')):
-        print("Dentro de receber_msg: " + str(endereço))
         while True:
             mensagem, addr = ouvir_socket(bocal)
             print("Recebido: ", mensagem, end="|")       
@@ -56,19 +53,22 @@ class Servidor:
                 porta = addr[1]
                 endIP = str(addr[0])
 
-            print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
-            if ('0' == mensagem[0]):
-                self.cadastrarSensor(mensagem[1:], endIP, porta, bocal)
-            elif ('1' == mensagem[0]):
-                self.atualizarSensor(mensagem[1:])
-            elif ('2' == mensagem[0]):
-                self.cadastrarMedico(mensagem[1:])
-            elif ('3' == mensagem[0]):
-                self.atualizarMedico(mensagem[1:])
+            if (mensagem == None):
+                self.repita_mensagem(end_IP, bocal)
             else:
-                self.repitaMensagem(endIP, porta)
+                print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
+                if ('0' == mensagem[0]):
+                    self.cadastrarSensor(mensagem[1:], bocal)
+                elif ('1' == mensagem[0]):
+                    self.atualizarSensor(mensagem[1:])
+                elif ('2' == mensagem[0]):
+                    self.cadastrarMedico(mensagem[1:])
+                elif ('3' == mensagem[0]):
+                    self.atualizarMedico(mensagem[1:])
+                else:
+                    self.repitaMensagem(endIP, porta)
 
-    def cadastrarSensor(self, mensagem, endereço, porta, bocal):
+    def cadastrarSensor(self, mensagem, bocal):
         # Separa o CPF do ID        
         cpf = mensagem.split(caracter_separador)
         identificador = cpf[1]
@@ -83,14 +83,15 @@ class Servidor:
         self.id_sensores.append(identificador)
     
         # Adiciona endereço do sensor na lista de endereços
-        endereço_completo = str(endereço) + ";" + str(porta)
+#        endereço_completo = str(endereço) + ";" + str(porta)
         #self.endereco_sensores.append(endereço_completo)
         #print("No endereço: ", endereço_completo)
         
         # Resposta ao cadastro
         resposta = '0'
-        enviarTCP(resposta, bocal)
-        print("Enviado: " + resposta + " p/: " + endereço_completo)
+        # Envia resposta final do servidor ao sensor, antes de fechar conexão
+        enviar_TCP(resposta, bocal)
+        print("Enviado: " + resposta)
         
     def atualizarSensor(self, mensagem):
         # Atualiza os dados do sensor correspondente ao endereço recebido
@@ -102,11 +103,17 @@ class Servidor:
         print("Atualizando sensor: " + identificador)
         print("BPM: " + self.sensores[identificador].bpm + " Pressao: " + str(self.sensores[identificador].pressao) + " Movimento: " + str(self.sensores[identificador].movimento))
         
-    def cadastrarMedico(self, mensagem):
+    def cadastrar_medico(self, mensagem):
         print("Cadatrar medico")
                 
-    def atualizarMedico(self, mensagem):
+    def autenticar_medico(self, mensagem):
+        print("Autenticar medico")
+
+    def enviar_risco(self, mensagem):
         print("Atualizar medico")
+
+    def enviar_monitorado(self, mensagem):
+        print("Enviando paciente monitorado")
 
     def repitaMensagem(self, mensagem):
         print("Repita mensagem")

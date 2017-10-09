@@ -1,5 +1,5 @@
 from tkinter import Tk, Label, Button, LEFT, RIGHT, W, IntVar
-from sensor_cliente import *
+from teste import *
 from threading import Thread
 
 class MyFirstGUI:
@@ -11,7 +11,7 @@ class MyFirstGUI:
         # Variaveis do Sensor
         #threadSensor = Thread(target = novoSensor(),)
         #threadSensor.start()
-        self.sensor = novoSensor()
+        self.sensor = novoSensor(cpf_sensor, ip_servidor, tcp_porta)
 
         # Label principal
         self.label = Label(master, text="Configurações do Sensor:")
@@ -123,6 +123,10 @@ class MyFirstGUI:
         self.valor_movimento_label.grid(row=2, column=1)
 
 
+# Rodando
+cpf_sensor = str(input("Digite um CPF para o sensor: "))
+ip_servidor = str(input("Digite o IP do servidor: "))
+tcp_porta = int(input("Digite a porta TCP do servidor: "))
 root = Tk()
 my_gui = MyFirstGUI(root)
 root.mainloop()

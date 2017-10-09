@@ -14,7 +14,6 @@ from sensor_sensor import *
     Responsavel por comunicar o model de sensor com a interface
 """
 
-UDP_IP = "127.0.0.1"
 
 #Cria um novo sensor e atribui valores aleatorios a ele
 def selecionaValores(sensor):
@@ -27,7 +26,7 @@ def selecionaValores(sensor):
     return mensagem
 
 
-def enviarValores(sensor):
+def enviarValores(sensor, ip_servidor):
     """ Envia valores aleatorios continuamente ate o usuario modificar o valor.
     A partir dai, envia os valores definidos pelo usuario"""
 
@@ -38,31 +37,29 @@ def enviarValores(sensor):
         if (sensor.modificado == False):
             sensor.gerarValores()
         mensagem = "1" + selecionaValores(sensor)
-        enviarUDP(mensagem, UDP_IP)
+        enviarUDP(mensagem, ip_servidor)
         print("Enviado: ", mensagem)
 
-def cadastrarSensor(sensor):
+def cadastrarSensor(sensor, bocal):
     # Define mensagem de cadastro
-    mensagem = "0" + sensor.cpf + ";" + sensor.identificador
+    mensagem = "0" + sensor.cpf + caracter_separador + sensor.identificador
     resposta = "1"
     while (resposta != "0"):
-        # Envia msg e retorna o socket de envio
-        bocal = enviarUDP(mensagem, UDP_IP)
+        # Envia msg e retorna a resposta
+        resposta = enviar_cadastro_TCP(mensagem,bocal)
         print ("Enviado: ", mensagem)
-        # Aguarda resposta neste bocal
-        resposta, endereço = ouvir_socket(bocal)
         print("Resposta: ", resposta)
-        print("De: " + endereço[0] + ";" + str(endereço[1]))
 
-def novoSensor():
-    cpf = input("Digite o CPF do sensor: ")
+def novoSensor(cpf, ip_servidor, tcp_porta):
     novoSensor = Sensor(cpf)
     novoSensor.gerarValores()
-    # Cadastrar sensor no servidor
-    cadastrarSensor(novoSensor)
+    # Cadastrar sensor no servidor. Cria socket e envia cadastro por meio dele até receber confirmação do cadastro
+    bocal = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    bocal.connect((ip_servidor, tcp_porta))
+    cadastrarSensor(novoSensor, bocal)
     print("Sensor cadastrado!")
     # Depois de cadastrado, começar a enviar valores
-    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor,))
+    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor, ip_servidor))
     threadEnviaValores.daemon = True
     threadEnviaValores.start()
     return novoSensor

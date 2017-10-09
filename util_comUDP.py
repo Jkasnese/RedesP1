@@ -19,8 +19,21 @@ def ouvir_socket(socket):
         data, addr = socket.recvfrom(1024) # buffer size is 1024 bytes
         return bytes.decode(data), addr
 
+""" Cria socket, envia mensagem, recebe resposta e fecha conexão
+    Atributos:
+        mensagem
+        ip
+        porta"""
+def enviar_cadastro_TCP(mensagem, bocal):
+    bocal.send(mensagem.encode('utf-8'))
+    resposta = bocal.recv(1024) # Buffer de 1024 pra resposta
+    resposta = resposta.decode('utf-8')
+    if ('0' == resposta):
+        bocal.close()
+    return resposta
 
-def enviarTCP(mensagem, host, porta):
+def enviar_TCP(mensagem, bocal):
+    bocal.send(mensagem.encode('utf-8'))
     return
 
 def abrirSocketTCP(porta=8080, host=''):
@@ -44,11 +57,12 @@ def abrirSocketTCP(porta=8080, host=''):
 
     return bocal
 
+""" Pede um socket e retorna a string de resposta"""
 def ouvirTCP(bocal):
     # Deixar a thread pra sempre recebendo dados
     while True:
         # data recebe os dados de no maximo 140, neste caso. Acho que bytes.
-        mensagem = conn.recv(1024)
+        mensagem = (conn.recv(1024)).decode('utf-8')
         # Seja educado e responda
         return mensagem        
 
