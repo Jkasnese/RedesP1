@@ -195,7 +195,7 @@ class Servidor:
             enviarUDP(mensagem, porta_udp, ip_cliente)
 
     def parar_monitoramento(self, crm, bocal):
-        self.medicos[crm][4] == False
+        self.medicos[crm][4] = False
         enviar_TCP('0', bocal)
         return
 
