@@ -128,7 +128,7 @@ def atualizar_lista_risco(lista_risco, crm, bocal):
 
 ip_servidor = input("Digite o ip do servidor: ")
 porta = int(input("Digite a porta TCP: "))
-medico, bocal = novo_medico("Joao", "123", "admin", ip_servidor, porta)
+medico, bocal = novo_medico("Joao", "123", "admin", "127.0.0.1", porta)
 time.sleep(1)
 buscar_paciente("123", "Buba", bocal)
 time.sleep(15)
