@@ -25,7 +25,7 @@ def novo_medico(nome, crm, senha, ip_servidor, porta_servidor):
     solicitar_cadastro_medico(novo_medico, senha, bocal)
 
     # Criar nova Thread pra pedir lista de risco permanentemente p/ servidor
-    thread_atualiza_lista = Thread(target = solicitar_lista_risco, args=(novo_medico.crm, bocal, lista_risco))
+    thread_atualiza_lista = Thread(target = solicitar_lista_risco, args=(novo_medico.crm, bocal, lista_risco), daemon=True)
     thread_atualiza_lista.start()
 
     return novo_medico, bocal
