@@ -144,7 +144,7 @@ class Servidor:
     def enviar_lista_risco(self, mensagem, bocal):
         resposta = '0'
         # Itera na lista de sensores e coloca sensores em risco na lista
-        if not id_sensores:
+        if not self.id_sensores:
             print("Nao ha sensores cadastrados no servidor!")
             enviar_TCP('1', bocal)
             return
