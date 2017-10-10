@@ -34,16 +34,8 @@ class MyFirstGUI:
         self.movimento_label = Label(master, text="Movimentando:")
         self.movimento_label.grid(row=1, column=3, sticky=E)
 
-        # Exibir pacientes: [0]CPF, [1]BPM, [2]pressao, [3]movimento, [4]botão monitorar
-        #Talvez precise iterar na lista de labels e ir botand o grid
-        if (not lista_risco):
-            # Label lista vazia
-            self.vazia_label = Label(master, text="Nao ha pacientes cadastrados!")
-            self.vazia_label.grid(row=2, column=0, sticky=W)
-        else:
-            for i in lista_risco:
-                self.exibir_paciente(i) # CPF de cada paciente
-            self.atualizar_lista()
+        thread_atualizar_lista = Thread(target=self.atualizar_lista, args=(master,), daemon=True)
+        thread_atualizar_lista.start()        
 
         # Botão fechar
         self.close_button = Button(master, text="Close", command=master.quit)
@@ -57,7 +49,22 @@ class MyFirstGUI:
 #    def atualizarValores(self):
         # FALTA FAZER
 
-    def atualizar_lista(self):
+    def atualizar_lista(self, master):
+        while True:
+            # Exibir pacientes: [0]CPF, [1]BPM, [2]pressao, [3]movimento, [4]botão monitorar
+            #Talvez precise iterar na lista de labels e ir botand o grid
+            if (not lista_risco):
+                # Label lista vazia
+                self.vazia_label = Label(master, text="Nao ha pacientes cadastrados!")
+                self.vazia_label.grid(row=2, column=0, sticky=W)
+            else:
+                linha = 2
+                for paciente in lista_risco:
+                    self.exibir_paciente(paciente, master, linha) # CPF de cada paciente
+                    linha += 1
+                #self.atualizar_grid()
+
+    def atualizar_grid(self):
         linha = 2
         for i in self.labels_pacientes:
             for j in range (4):
@@ -65,11 +72,14 @@ class MyFirstGUI:
             linha += 1
 
     # Recebe lista de dados de um paciente. [0] = CPF, [1] = BPM, [2] = Pressao, [3] = Movimento
-    def exibir_paciente(self, paciente):
+    def exibir_paciente(self, paciente, master, linha):
+        paciente = paciente.spit(caracter_separador)
         for i in range(4):
-            label_paciente = Label(master, text=str(paciente[i]))
+            label_paciente = Label(self.master, text=str(paciente[i]))
+            label_paciente.grid(row=linha, column=i, columnspan=1)
             self.labels_pacientes.append(label_paciente)
-        monitorar_button = Button(master, text="MONITORAR", command= lambda: self.monitorar_paciente(paciente[0]))
+        monitorar_button = Button(self.master, text="MONITORAR", command= lambda: self.monitorar_paciente(paciente[0]))
+        monitorar_button.grid(row=linha, column=4, sticky=E)
 
     def monitorar_paciente(self, cpf):
         selecionar_paciente_monitorado(self.medico.crm, cpf, self.bocal, 5005)
