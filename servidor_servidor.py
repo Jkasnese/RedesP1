@@ -157,7 +157,10 @@ class Servidor:
                 resposta += str(self.sensores[i].pressao) + caracter_separador
                 resposta += str(movimento) + separador_pacientes
         enviar_TCP(resposta, bocal)
+        print("")        
         print("Enviada lista de risco p/ medico: " + mensagem)
+        print(resposta)
+        print("")
         return
 
 
