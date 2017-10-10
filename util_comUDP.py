@@ -3,6 +3,7 @@ from queue import Queue
 
 # Comunicação UDP
 
+""" Cria socket e envia mensagem"""
 def enviarUDP(MESSAGE, UDP_IP, UDP_PORT=5005):
     sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
@@ -19,7 +20,8 @@ def ouvir_socket(socket):
         data, addr = socket.recvfrom(1024) # buffer size is 1024 bytes
         return bytes.decode(data), addr
 
-""" Cria socket, envia mensagem, recebe resposta e fecha conexão
+""" Cadastrar sensor
+    Cria socket, envia mensagem, recebe resposta e fecha conexão
     Atributos:
         mensagem
         ip
@@ -61,8 +63,8 @@ def abrirSocketTCP(porta=8080, host=''):
 def ouvirTCP(bocal):
     # Deixar a thread pra sempre recebendo dados
     while True:
-        # data recebe os dados de no maximo 140, neste caso. Acho que bytes.
-        mensagem = (conn.recv(1024)).decode('utf-8')
+        # data recebe os dados de no maximo 1024 bytes, neste caso.
+        mensagem = (bocal.recv(1024)).decode('utf-8')
         # Seja educado e responda
         return mensagem        
 

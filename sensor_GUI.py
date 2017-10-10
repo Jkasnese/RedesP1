@@ -1,5 +1,5 @@
 from tkinter import Tk, Label, Button, LEFT, RIGHT, W, IntVar
-from teste import *
+from sensor_controller import *
 from threading import Thread
 
 class MyFirstGUI:
