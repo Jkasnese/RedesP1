@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import socket
 import time
-from util_protocoloCom import *
-from util_comUDP import *
+from util_protocolo_com import *
+from util_com import *
 from threading import Thread
 
 #Achar jeito melhor pra importar

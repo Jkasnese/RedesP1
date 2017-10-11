@@ -1,10 +1,10 @@
-import time
+﻿import time
 import socket
-from util_comUDP import *
+from util_com import *
 # Achar jeito melhro pra importar
 from sensor_sensor import *
 from threading import Thread
-from util_protocoloCom import *
+from util_protocolo_com import *
 from queue import Queue
 
 #import comunicacaoTCP

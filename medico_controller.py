@@ -1,9 +1,9 @@
-import socket
+﻿import socket
 import time
 import fcntl
 import struct
-from util_protocoloCom import *
-from util_comUDP import *
+from util_protocolo_com import *
+from util_com import *
 from threading import Thread
 from medico_medico import *
 
