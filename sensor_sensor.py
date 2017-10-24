@@ -28,6 +28,8 @@ class Sensor:
         self.movimento = bool(random.randint(0,1))
         self.pressao = Pressao(random.randint(0,2))
         self.modificado = False
+        self.x = (-1*tamanho_mundo, tamanho_mundo)
+        self.y = (-1*tamanho_mundo, tamanho_mundo)
 
     @property
     def bpm(self):

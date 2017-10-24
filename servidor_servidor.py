@@ -6,6 +6,7 @@ from sensor_sensor import *
 from threading import Thread
 from util_protocolo_com import *
 from queue import Queue
+import random
 
 #import comunicacaoTCP
 
@@ -18,6 +19,8 @@ class Servidor:
         self.medicos = {} # Index = CRM. ELementos = [nome, senha, thread_monitoramento]
         self.crm_medicos = []
         self.threads_ouvintes_TCP = {}
+        self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
+        self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
 
         # UDP
         self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
@@ -209,6 +212,9 @@ class Servidor:
     def repita_mensagem(self, bocal):
         enviar_TCP("Repita mensagem!", bocal)        
         print("Repita mensagem!")
+
+    def funcao_hash(self):
+        return
             
             
             

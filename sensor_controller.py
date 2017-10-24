@@ -23,6 +23,8 @@ def selecionaValores(sensor):
     mensagem += str(sensor.bpm) + caracter_separador
     mensagem += str(sensor.pressao.value) + caracter_separador
     mensagem += str(sensor.movimento) + caracter_separador
+    mensagem += str(sensor.x) + caracter_separador
+    mensagem += str(sensor.y) + caracter_separador
     return mensagem
 
 
