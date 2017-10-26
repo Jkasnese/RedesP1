@@ -63,7 +63,8 @@ def novoSensor(cpf, ip_servidor, tcp_porta):
     ip_servidor = cadastrarSensor(novoSensor, bocal)
     print("Sensor cadastrado!")
     # Depois de cadastrado, começar a enviar valores
-    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor, ip_servidor), daemon=True)
+    threadEnviaValores = Thread(target = enviarValores, args = (novoSensor, ip_servidor))
+    threadEnviaValores.daemon = True
     threadEnviaValores.start()
     return novoSensor
 

@@ -21,9 +21,8 @@
     #  0!0 Fracasso
 
 # CADASTRAR SENSOR
-    # PRIMEIRA MENSAGEM SENSOR-NUVEM É "CADASTRO(0)ID|X|Y"
-    ## resposta do nuvem->sensor 
-    #
+    # PRIMEIRA MENSAGEM DO SENSOR É "CADASTRO(0)ID|X|Y"
+    ## resposta do servidor é (0) cadastrou, (1) não cadastrou
         
 
 # MENSAGEM SENSOR   

@@ -1,3 +1,5 @@
+import math
+import sys
 ﻿import time
 import socket
 from util_com import *
@@ -14,13 +16,15 @@ class Servidor:
 
     def __init__(self):
         # Dados
-        self.sensores = {} # Recebe tudo string
-        self.id_sensores = []
-        self.medicos = {} # Index = CRM. ELementos = [nome, senha, thread_monitoramento]
-        self.crm_medicos = []
+        self.sensores = {} # Par id:localização
+        self.id_sensores = [] # lista com todos os IDs sensores cadastrados
+        self.medicos = {} # Par id:localização
+        self.crm_medicos = [] # lista com todos os IDs dos médicos
         self.threads_ouvintes_TCP = {}
         self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
         self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
+        self.servidores_borda = {} # Par ip:localização
+        self.lista_servidores_borda = [] # Lista com o IP de todos os servidores de borda
 
         # UDP
         self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
@@ -48,7 +52,7 @@ class Servidor:
             bocal = bocal[0]
             thread_ouvir_TCP = Thread(target = self.receber_mensagem, args=(bocal, endereço))
             self.threads_ouvintes_TCP[bocal] = thread_ouvir_TCP
-            thread_ouvir_TCP.start()            
+            thread_ouvir_TCP.start()
 
     def receber_mensagem(self, bocal, endereço=('','')):
         mensagem = '0'
@@ -89,30 +93,27 @@ class Servidor:
         # Caso saia do while, não está mais escutando. Posso fechar o bocal.
         bocal.close()
 
-    def cadastrarSensor(self, mensagem, bocal):
+    def cadastrar_sensor_nuvem(self, mensagem, bocal):
         # Separa o CPF do ID        
-        cpf = mensagem.split(caracter_separador)
-        identificador = cpf[1]
-        cpf = cpf[0]
+        identificador = mensagem.split(caracter_separador)
+        posicao_sensor = (identificador[1], identificador[2])
+        identificador = identificador[0]
 
         # Cadastra novo sensor
-        novoSensor = Sensor(cpf, identificador)
-        self.sensores[identificador] = novoSensor
-        print("Cadastrado sensor: " + self.sensores[identificador].cpf)
-
-        # Adiciona ID do sensor na lista de sensores
+        self.sensores[identificador] = posicao_sensor
+            # Adiciona ID do sensor na lista de sensores
         self.id_sensores.append(identificador)
-    
-        # Adiciona endereço do sensor na lista de endereços
-#        endereço_completo = str(endereço) + ";" + str(porta)
-        #self.endereco_sensores.append(endereço_completo)
-        #print("No endereço: ", endereço_completo)
-        
-        # Resposta ao cadastro
-        resposta = '0'
+        print("Cadastrado sensor: " + identificador + ":" + self.sensores[identificador])
+
+        # Responde ao cadastro com IP do servidor de borda que o sensor deve enviar
+        resposta = calcula_melhor_servidor
+
         # Envia resposta final do servidor ao sensor, antes de fechar conexão
         enviar_TCP(resposta, bocal)
         print("Enviado: " + resposta)
+
+        # Envia dados do sensor ao servidor de borda
+        enviar_TCP(
         
     def atualizarSensor(self, mensagem):
         # Atualiza os dados do sensor correspondente ao endereço recebido
@@ -213,9 +214,30 @@ class Servidor:
         enviar_TCP("Repita mensagem!", bocal)        
         print("Repita mensagem!")
 
-    def funcao_hash(self):
-        return
+    """ Retorna IP do servidor, com base na menor distancia entre o servidor e o sensor"""
+    def calcular_melhor_servidor(self, sensor):
+        # Inicializa distancia_minima pra infinito. IP servidor pra nulo. posicao do sensor.
+        distancia_minima = sys.maxsize
+        ip_servidor = ""
+        posicao_sensor = (sensor.x, sensor.y)
+
+        # Recebe IP do servidor com menor distancia
+        for i in lista_servidores_borda:
+            posicao_servidor = (servidores_borda[i].x, servidores_borda[i].y)
+            distancia_sensor_servidor = calcula_distancia(posicao_sensor, posicao_servidor)
+            if (distancia_sensor_servidor < distancia_minima):
+                distancia_minima = distancia_sensor_servidor
+                ip_servidor = i
+        return i
             
+    """ 
+    Calcula distancia do local B ao local A    
+    Recebe uma tupla contendo as coordenadas (x,y) de um local"""
+    def calcula_distancia(self, local_a, local_b):
+        segmento_x = local_b[0]-local_a[0]
+        segmento_y = local_b[1]-local_a[1]
+        return math.sqrt(math.pow(segmento_x, 2) + math.pow(segmento_y, 2) )
+
             
             
             
