@@ -16,7 +16,7 @@ class Servidor:
 
     def __init__(self):
         # Dados
-        self.sensores = {} # Par id:localização
+        self.sensores = {} # Par id:localização (ok) ou id:(localização, [ID, CPF, BPM, PRESSAO, MOVIMENTO]) (em risco)
         self.id_sensores = [] # lista com todos os IDs sensores cadastrados
         self.id_sensores_risco = [] # Lista com todos os sensores que estão em risco. Atualizados pelos servidores de borda.
         self.medicos = {} # Par id:localização
@@ -95,6 +95,8 @@ class Servidor:
                 elif ('8' == mensagem[0]):
                     ip_recebido = self.cadastrar_servidor_borda(mensagem[1:])
                     self.responder_cadastro_borda(ip_recebido, bocal)
+                elif ('A' == mensagem[0]):
+                    self.receber_lista_pacientes_risco(mensagem[1:])
                 else:
                     self.repita_mensagem(bocal)
         # Caso saia do while, não está mais escutando. Posso fechar o bocal.
@@ -299,7 +301,25 @@ class Servidor:
         else:
             resposta = "-1"
         enviar_TCP(resposta, bocal)
-            
-            
+
+    """ Recebe lista de pacientes concatenados.
+        Formato: ID|CPF|BPM|PRESSAO|MOVIMENTO;ID|CPF... """
+    def receber_lista_pacientes_risco(self, mensagem, bocal):
+        # Caso a mensagem esteja vazia, não tem nada pra cadastrar
+        if ("1" == mensagem[0]):
+            enviar_TCP("0", bocal)
+            return
+
+        # Separa os pacientes
+        pacientes = mensagem.split(separador_pacientes)
+
+        # Para cada paciente, armazenar a informação deles no servidor
+        for i in pacientes:
+            info_paciente = i.split(caracter_separador) # 0 ID, 1 CPF, 2 BPM, 3 PRESSAO, 4 MOVIMENTO
+            self.sensores[info_paciente[0]] = (self.sensores[info_paciente[0]], [info_pacientes[1], info_pacientes[2], info_pacientes[3], info_pacientes[4]]
+        
+        # Responder borda
+        enviar_TCP("0", bocal)
+        return
             
 servidor = Servidor()

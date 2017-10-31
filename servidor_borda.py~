@@ -22,6 +22,7 @@ class Servidor_Borda:
         self.ip_nuvem = str(input("Digite o IP do servidor de nuvem: "))
         self.porta_nuvem = int(input("Digite a porta TCP do servidor de nuvem: "))
         mensagem = "8" + self.meu_ip + caracter_separador + str(self.x) + caracter_separador + str(self.y)
+        self.cadastrar_na_nuvem(mensagem)
 
         # Dados
         self.sensores = {} # Recebe tudo string. Chave: ID. Valores: CPF, BPM, PRESSAO, MOVIMENTO, BPM_MAX, BPM_MIN
@@ -87,7 +88,7 @@ class Servidor_Borda:
                 elif ('3' == mensagem[0]):
                     self.autenticar_medico(mensagem[1:], bocal)
                 elif ('4' == mensagem[0]):
-                    self.enviar_lista_risco(mensagem[1:], bocal)
+                    self.cadastrar_risco_nuvem(mensagem[1:], bocal)
                 elif ('5' == mensagem[0]):
                     self.buscar_paciente(mensagem[1:], bocal)
                 elif ('6' == mensagem[0]):
@@ -152,28 +153,36 @@ class Servidor_Borda:
         return        
 
     """ Envia lista com o ID dos sensores em risco p/ o servidor.
-        Formato: CPF||PRESSAO|MOVIMENTO, de acordo com protocolo"""
-    def enviar_lista_risco(self, mensagem, bocal):
-        resposta = '0'
-        # Itera na lista de sensores e coloca sensores em risco na lista
-        if not self.id_sensores:
-            print("Nao ha sensores cadastrados no servidor!")
-            enviar_TCP('1', bocal)
-            return
-        for i in self.id_sensores:
-            bpm = self.sensores[i].bpm
-            movimento = self.sensores[i].movimento
-            if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
-                resposta += self.sensores[i].cpf + caracter_separador
-                resposta += str(bpm) + caracter_separador
-                resposta += str(self.sensores[i].pressao) + caracter_separador
-                resposta += str(movimento) + separador_pacientes
-        enviar_TCP(resposta, bocal)
-        print("")        
-        print("Enviada lista de risco p/ medico: " + mensagem)
-        print(resposta)
-        print("")
-        return
+        Formato: ID|CPF|BPM|PRESSAO|MOVIMENTO, de acordo com protocolo"""
+    def cadastrar_risco_nuvem(self):
+        while True: # Sempre executar essa rotina de 1 em 1 minuto
+            time.sleep(1)
+            contador += 1
+            if (contador == 60): # Caso se passou 1 minuto:
+                contador = 0
+                resposta = 'A'
+                # Itera na lista de sensores e coloca sensores em risco na lista
+                if not self.id_sensores:
+                    print("Nao ha sensores cadastrados no servidor!")
+                    enviar_TCP('1', bocal)
+                    return
+                for i in self.id_sensores:
+                    bpm = self.sensores[i].bpm
+                    movimento = self.sensores[i].movimento
+                    if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
+                        resposta += self.sensores[i].identificador + caracter_separador             
+                        resposta += self.sensores[i].cpf + caracter_separador
+                        resposta += str(bpm) + caracter_separador
+                        resposta += str(self.sensores[i].pressao) + caracter_separador
+                        resposta += str(movimento) + separador_pacientes
+
+                # Cadastra na nuvem e confirma p/ usuario
+                self.cadastrar_na_nuvem(resposta)
+                print("")        
+                print("Enviada lista de risco p/ nuvem: " + mensagem)
+                print(resposta)
+                print("")
+                return
 
 
     """ Recebe CRM|CPF
@@ -223,8 +232,8 @@ class Servidor_Borda:
         print("Repita mensagem!")
 
     # Cadastra na nuvem o proprio servidor de borda ou a lista de risco
-    # Mensagem vai determinar o que vai ser cadastrado. mensagem[0] == 8 cadastra o servidor. mensagem[0] == 9 cadastra na lista em risco.
-    def cadastrar_na_nuvem(self, mensagem):            
+    # Mensagem vai determinar o que vai ser cadastrado. mensagem[0] == 8 cadastra o servidor. mensagem[0] == A cadastra na lista em risco.
+    def cadastrar_na_nuvem(self, mensagem):
         bocal_nuvem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         bocal_nuvem.connect((self.ip_nuvem, self.porta_nuvem))
         resposta = "-1"

@@ -14,8 +14,8 @@
     # 6 = Selecionar paciente para ser monitorado
     # 7 = Parar monitoramento
     # 8 = Cadastrar Servidor de Borda
-
     # 9 = Repita mensagem
+    # A = Cadastrar lista de pacientes em risco na nuvem
 
 # RESPOSTA DO SERVIDOR = X
     # 0 = Sucesso
@@ -59,6 +59,11 @@
 
 # 8 - CADASTRAR SENSOR DE BORDA
     # borda -> nuvem: 8IP|X|Y
+    # nuvem -> borda: 0 (ok), != 0 (falhou)
+
+# A - CASTRAR LISTA DE PACIENTES EM RISCO NA NUVEM
+    # borda -> nuvem AID|CPF|BPM|PRESSAO|MOVIMENTO;ID|CPF|BPM|PRESSAO|MOVIMENTO;...
+    ## caso a lista esteja vazia, borda envia 1
     # nuvem -> borda: 0 (ok), != 0 (falhou)
 
 
