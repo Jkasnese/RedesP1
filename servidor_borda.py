@@ -159,6 +159,7 @@ class Servidor_Borda:
     """ Envia lista com o ID dos sensores em risco p/ o servidor.
         Formato: ID|CPF|BPM|PRESSAO|MOVIMENTO, de acordo com protocolo"""
     def cadastrar_risco_nuvem(self):
+        contador = 0
         while True: # Sempre executar essa rotina de 1 em 1 minuto
             time.sleep(1)
             contador += 1

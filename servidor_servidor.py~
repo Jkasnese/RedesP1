@@ -307,6 +307,7 @@ class Servidor:
     def receber_lista_pacientes_risco(self, mensagem, bocal):
         # Caso a mensagem esteja vazia, não tem nada pra cadastrar
         if ("1" == mensagem[0]):
+            enviar_TCP("0", bocal)
             return
 
         # Separa os pacientes

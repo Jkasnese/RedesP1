@@ -50,6 +50,10 @@ class Servidor_Borda:
         thread_cria_bocal = Thread(target = self.recebe_bocal, args=(lista_conexoes,))
         thread_cria_bocal.start()
 
+        # Thread pra sempre cadastrar sensores em risco na nuvem
+        thread_cadastrar_risco_nuvem = Thread(target=self.cadastrar_risco_nuvem, daemon=True)
+        thread_cadastrar_risco_nuvem.start()
+
     def recebe_bocal(self, lista_conexoes):
         while True:
             bocal = lista_conexoes.get()
