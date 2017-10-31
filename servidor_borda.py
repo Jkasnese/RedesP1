@@ -163,32 +163,35 @@ class Servidor_Borda:
         while True: # Sempre executar essa rotina de 1 em 1 minuto
             time.sleep(1)
             contador += 1
-            if (contador == 60): # Caso se passou 1 minuto:
+            if (contador == 10): # Caso se passou 60 segundos:
                 contador = 0
-                resposta = 'A1'
+                mensagem = 'A1'
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
-                    self.cadastrar_na_nuvem(resposta)
+                    self.cadastrar_na_nuvem(mensagem)
                 else:
                     for i in self.id_sensores:
+                        print("Lista de sensores")
                         bpm = self.sensores[i].bpm
                         movimento = self.sensores[i].movimento
                         if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
-                            resposta += self.sensores[i].identificador + caracter_separador             
-                            resposta += self.sensores[i].cpf + caracter_separador
-                            resposta += str(bpm) + caracter_separador
-                            resposta += str(self.sensores[i].pressao) + caracter_separador
-                            resposta += str(movimento) + separador_pacientes
+                            mensagem += self.sensores[i].identificador + caracter_separador             
+                            mensagem += self.sensores[i].cpf + caracter_separador
+                            mensagem += str(bpm) + caracter_separador
+                            mensagem += str(self.sensores[i].pressao) + caracter_separador
+                            mensagem += str(movimento) + separador_pacientes
 
                     # Confere se existe paciente em risco
-                    if ("A1" != resposta):
-                        resposta[1] = "0"
-    
+                    print("Antes de conferir resposta")
+                    if ("A1" != mensagem):
+                        mensagem = "A0" + mensagem[2:]
+                    print("Conferiu resposta")    
+
                     # Cadastra na nuvem e confirma p/ usuario
-                    self.cadastrar_na_nuvem(resposta)
+                    self.cadastrar_na_nuvem(mensagem)
                     print("")        
-                    print("Enviada lista de risco p/ nuvem: " + resposta)
+                    print("Enviada lista de risco p/ nuvem: " + mensagem)
                     print("")
 
 
@@ -245,7 +248,7 @@ class Servidor_Borda:
         bocal_nuvem.connect((self.ip_nuvem, self.porta_nuvem))
         resposta = "-1"
 
-        while (resposta == "-1"):
+        while ("-1" == resposta):
             resposta = enviar_cadastro_TCP(mensagem, bocal_nuvem)
             print ("Enviado: ", mensagem)
             print("Resposta: ", resposta)
