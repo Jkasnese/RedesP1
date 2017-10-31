@@ -176,11 +176,11 @@ class Servidor_Borda:
                         bpm = self.sensores[i].bpm
                         movimento = self.sensores[i].movimento
                         if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
-                            mensagem += self.sensores[i].identificador + caracter_separador             
+                            mensagem += separador_pacientes + self.sensores[i].identificador + caracter_separador             
                             mensagem += self.sensores[i].cpf + caracter_separador
                             mensagem += str(bpm) + caracter_separador
                             mensagem += str(self.sensores[i].pressao) + caracter_separador
-                            mensagem += str(movimento) + separador_pacientes
+                            mensagem += str(movimento)
 
                     # Confere se existe paciente em risco
                     print("Antes de conferir resposta")

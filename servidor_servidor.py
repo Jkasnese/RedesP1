@@ -311,7 +311,7 @@ class Servidor:
             return
 
         # Separa os pacientes
-        pacientes = mensagem[1:].split(separador_pacientes)
+        pacientes = mensagem[2:].split(separador_pacientes)
 
         # Para cada paciente, armazenar a informação deles no servidor
         for i in pacientes:
