@@ -20,6 +20,8 @@ def ouvir_socket(socket):
         data, addr = socket.recvfrom(1024) # buffer size is 1024 bytes
         return bytes.decode(data), addr
 
+# # # # TCP # # # # 
+
 """ Cadastrar sensor
     Cria socket, envia mensagem, recebe resposta e fecha conexão
     Atributos:

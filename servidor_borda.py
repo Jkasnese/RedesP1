@@ -13,15 +13,29 @@ import random
 class Servidor_Borda:
 
     def __init__(self):
+        # Localizacao
+        self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
+        self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
+
+        # Conecta na nuvem
+        self.meu_ip = str(input("Digite o IP externo desta maquina: ")) # Melhorar: pegar o IP da maquina automaticamente. PENDENTE
+        ip_nuvem = str(input("Digite o IP do servidor de nuvem: "))
+        porta_nuvem = int(input("Digite a porta TCP do servidor de nuvem: "))
+        bocal_nuvem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        bocal_nuvem.connect((ip_nuvem, porta_nuvem))
+        resposta = "-1"
+        mensagem = "8" + self.meu_ip + caracter_separador + str(self.x) + caracter_separador + str(self.y)
+        while (resposta == "-1"):
+            resposta = enviar_cadastro_TCP(mensagem, bocal_nuvem)
+            print ("Enviado: ", mensagem)
+            print("Resposta: ", resposta)
+
         # Dados
         self.sensores = {} # Recebe tudo string
         self.id_sensores = []
         self.medicos = {} # Index = CRM. ELementos = [nome, senha, thread_monitoramento]
         self.crm_medicos = []
         self.threads_ouvintes_TCP = {}
-        self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
-        self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
-
 
         # UDP
         self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
@@ -220,4 +234,4 @@ class Servidor_Borda:
             
             
             
-servidor = Servidor()
+servidor = Servidor_Borda()

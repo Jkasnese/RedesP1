@@ -1,6 +1,6 @@
 import math
 import sys
-﻿import time
+#from time import *
 import socket
 from util_com import *
 # Achar jeito melhro pra importar
@@ -23,9 +23,12 @@ class Servidor:
         self.threads_ouvintes_TCP = {}
         self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
         self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
-        self.servidores_borda = {} # Par ip:localização
+        self.servidores_borda = {} # Par ip:localização. Localização é tupla (X,Y)
         self.lista_servidores_borda = [] # Lista com o IP de todos os servidores de borda
 
+        # Comunicacao
+        self.meu_ip = str(input("Digite o IP externo desta maquina: ")) # Melhorar: pegar o IP da maquina automaticamente. PENDENTE
+        
         # UDP
         self.socketUDP = abrirSocketUDP(int(input("Digite a porta da comunicacao UDP: ")))
         threadOuvirUDP = Thread(target = self.receber_mensagem, args=(self.socketUDP,))
@@ -75,7 +78,7 @@ class Servidor:
             else:
                 print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
                 if ('0' == mensagem[0]):
-                    self.cadastrarSensor(mensagem[1:], bocal)
+                    self.cadastrar_sensor_nuvem(mensagem[1:], bocal)
                 elif ('1' == mensagem[0]):
                     self.atualizarSensor(mensagem[1:])
                 elif ('2' == mensagem[0]):
@@ -88,33 +91,56 @@ class Servidor:
                     self.buscar_paciente(mensagem[1:], bocal)
                 elif ('6' == mensagem[0]):
                     self.monitorar_paciente(mensagem[1:])
+                elif ('8' == mensagem[0]):
+                    ip_recebido = self.cadastrar_servidor_borda(mensagem[1:])
+                    self.responder_cadastro_borda(ip_recebido, bocal)
                 else:
                     self.repita_mensagem(bocal)
         # Caso saia do while, não está mais escutando. Posso fechar o bocal.
         bocal.close()
 
     def cadastrar_sensor_nuvem(self, mensagem, bocal):
-        # Separa o CPF do ID        
+        # Obtem ID e posicao do sensor
         identificador = mensagem.split(caracter_separador)
-        posicao_sensor = (identificador[1], identificador[2])
-        identificador = identificador[0]
+        cpf = identificador[0]
+        posicao_sensor = (identificador[2], identificador[3])
+        identificador = identificador[1]
 
-        # Cadastra novo sensor
+        # Cadastra novo sensor na nuvem (ID e posicao)
         self.sensores[identificador] = posicao_sensor
             # Adiciona ID do sensor na lista de sensores
         self.id_sensores.append(identificador)
-        print("Cadastrado sensor: " + identificador + ":" + self.sensores[identificador])
+        print("Cadastrado sensor: " + identificador + ":" + str(self.sensores[identificador]))
 
         # Responde ao cadastro com IP do servidor de borda que o sensor deve enviar
-        resposta = calcula_melhor_servidor
-
-        # Envia resposta final do servidor ao sensor, antes de fechar conexão
-        enviar_TCP(resposta, bocal)
-        print("Enviado: " + resposta)
+        ip_servidor = self.calcular_melhor_servidor(posicao_sensor)
+        if (self.meu_ip == ip_servidor):
+            self.cadastrarSensor(mensagem)
+            enviar_TCP(ip_servidor, bocal)
+            return
 
         # Envia dados do sensor ao servidor de borda
-        enviar_TCP(
+        bocal_borda = abrirSocketTCP(8081, ip_servidor)
+        enviar_TCP(mensagem, bocal_borda)
+
+        # Envia resposta final do servidor ao sensor, antes de fechar conexão
+        enviar_TCP(ip_servidor, bocal)
+        print("Enviado: " + ip_servidor)
         
+    def cadastrarSensor(self, mensagem):
+        # Separa o CPF do ID        
+        cpf = mensagem.split(caracter_separador)
+        identificador = cpf[1]
+        cpf = cpf[0]
+
+        # Cadastra novo sensor
+        novoSensor = Sensor(cpf, identificador)
+        self.sensores[identificador] = novoSensor
+        print("Cadastrado sensor: " + self.sensores[identificador].cpf)
+
+        # Adiciona ID do sensor na lista de sensores
+        self.id_sensores.append(identificador)
+
     def atualizarSensor(self, mensagem):
         # Atualiza os dados do sensor correspondente ao endereço recebido
         mensagem = mensagem.split(caracter_separador)
@@ -123,7 +149,7 @@ class Servidor:
         self.sensores[identificador].pressao = int(mensagem[2])
         self.sensores[identificador].movimento = bool("True" == mensagem[3])
         print("Atualizando sensor: " + identificador)
-        print("BPM: " + str(self.sensores[identificador].bpm) + " Pressao: " + str(self.sensores[identificador].pressao) + " Movimento: " + str(self.sensores[identificador].movimento))
+        print("BPM: " + str(self.sensores[identificador].bpm) + " Pressao: " + str(self.sensores[identificador].pressao) + " Movimento: " + str(self.sensores[identificador].movimento) + " X:" + str(self.sensores[identificador].x) + " Y:" + str(self.sensores[identificador].y))
     
     """Recebe mensagem com formato: CRM|NOME|SENHA, de acordo com o protocolo, e cadastra o médico no dicionário de médicos"""
     def cadastrar_medico(self, mensagem, bocal):
@@ -214,30 +240,59 @@ class Servidor:
         enviar_TCP("Repita mensagem!", bocal)        
         print("Repita mensagem!")
 
-    """ Retorna IP do servidor, com base na menor distancia entre o servidor e o sensor"""
-    def calcular_melhor_servidor(self, sensor):
+    """ Retorna IP do servidor, com base na menor distancia entre o servidor e o sensor
+        Recebe tupla posicao do sensor (x,y)"""
+    def calcular_melhor_servidor(self, posicao_sensor):
+        if (not self.lista_servidores_borda):
+            return self.meu_ip
+
         # Inicializa distancia_minima pra infinito. IP servidor pra nulo. posicao do sensor.
         distancia_minima = sys.maxsize
         ip_servidor = ""
-        posicao_sensor = (sensor.x, sensor.y)
 
         # Recebe IP do servidor com menor distancia
-        for i in lista_servidores_borda:
-            posicao_servidor = (servidores_borda[i].x, servidores_borda[i].y)
-            distancia_sensor_servidor = calcula_distancia(posicao_sensor, posicao_servidor)
+        for i in self.lista_servidores_borda:
+            posicao_servidor = self.servidores_borda[i]
+            distancia_sensor_servidor = self.calcular_distancia(posicao_sensor, posicao_servidor)
             if (distancia_sensor_servidor < distancia_minima):
                 distancia_minima = distancia_sensor_servidor
                 ip_servidor = i
-        return i
+        return ip_servidor
             
     """ 
     Calcula distancia do local B ao local A    
     Recebe uma tupla contendo as coordenadas (x,y) de um local"""
-    def calcula_distancia(self, local_a, local_b):
-        segmento_x = local_b[0]-local_a[0]
-        segmento_y = local_b[1]-local_a[1]
+    def calcular_distancia(self, local_a, local_b):
+        segmento_x = int(local_b[0])-int(local_a[0])
+        segmento_y = int(local_b[1])-int(local_a[1])
         return math.sqrt(math.pow(segmento_x, 2) + math.pow(segmento_y, 2) )
 
+    """ Cadastra servidor de borda na lista dos servidores e no dicionário com a localização.
+        Recebe mensagem: IP|X|Y"""
+    def cadastrar_servidor_borda(self, mensagem):
+        # Separa os dados
+        ip_servidor = mensagem.split(caracter_separador)
+        posicao_x = ip_servidor[1]
+        posicao_y = ip_servidor[2]
+        ip_servidor = ip_servidor[0]
+
+        # Cadastra na lista
+        self.lista_servidores_borda.append(ip_servidor)
+        
+        # Cadastra no dicionario chave: IP, valor: (X, Y)
+        self.servidores_borda[ip_servidor] = (posicao_x, posicao_y)
+
+        # Conferindo cadastro
+        print("Servidor de borda " + ip_servidor + " cadastrado! Local: " + str(self.servidores_borda[ip_servidor]))
+
+        return ip_servidor
+            
+    def responder_cadastro_borda(self, ip_recebido, bocal):
+        if (ip_recebido in self.lista_servidores_borda):
+            resposta = "0"
+        else:
+            resposta = "-1"
+        enviar_TCP(resposta, bocal)
             
             
             

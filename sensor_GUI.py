@@ -11,6 +11,7 @@ class MyFirstGUI:
         # Variaveis do Sensor
         #threadSensor = Thread(target = novoSensor(),)
         #threadSensor.start()
+        # REMOVER SENSOR E ADICIONAR CONTROLLER P/ MVC PENDENTE FALTA FAZER
         self.sensor = novoSensor(cpf_sensor, ip_servidor, tcp_porta)
 
         # Label principal
@@ -53,6 +54,8 @@ class MyFirstGUI:
 
         self.parar_button = Button(master, text="PARA!", command=self.parar)
         self.parar_button.grid(row=2, column=3)
+
+        # # # # PRESSAO # # # #
         
         # Label Pressao
         self.pressao_label = Label(master, text="Pressão:")
@@ -74,9 +77,51 @@ class MyFirstGUI:
         self.pressao_alta_button = Button(master, text="ALTA", command=self.pressao_alta)
         self.pressao_alta_button.grid(row=3, column=4)
 
+        # # # # COORDENADAS # # # #
+       
+        # Label POSX
+        self.posicaox_label = Label(master, text="X:")
+        self.posicaox_label.grid(row=4, column=0, sticky=W)
+
+        # Valor posicaoX
+        self.valor_posicaox_label_num = IntVar()
+        self.valor_posicaox_label_num.set(self.sensor.x)
+        self.valor_posicaox_label = Label(master, textvariable=self.valor_posicaox_label_num)
+        self.valor_posicaox_label.grid(row=4, column=1)
+
+        # Botão Incrementar X
+        self.incrementar_posicaox_button = Button(master, text="/\\", command=self.incrementar_posicaox)
+        self.incrementar_posicaox_button.grid(row=4, column=2)
+
+        # Botão Decrementar X
+        self.decrementar_posicaox_button = Button(master, text="\\/", command=self.decrementar_posicaox)
+        self.decrementar_posicaox_button.grid(row=4, column=3)
+
+        # Label POSY
+        self.posicaoy_label = Label(master, text="Y:")
+        self.posicaoy_label.grid(row=5, column=0, sticky=W)
+
+        # Valor posicaoY
+        self.valor_posicaoy_label_num = IntVar()
+        self.valor_posicaoy_label_num.set(self.sensor.y)
+        self.valor_posicaoy_label = Label(master, textvariable=self.valor_posicaoy_label_num)
+        self.valor_posicaoy_label.grid(row=5, column=1)
+
+        # Botão Incrementar X
+        self.incrementar_posicaoy_button = Button(master, text="/\\", command=self.incrementar_posicaoy)
+        self.incrementar_posicaoy_button.grid(row=5, column=2)
+
+        # Botão Decrementar X
+        self.decrementar_posicaoy_button = Button(master, text="\\/", command=self.decrementar_posicaoy)
+        self.decrementar_posicaoy_button.grid(row=5, column=3)
+
+        # # # # FECHAR # # # #
+
         # Botão fechar
         self.close_button = Button(master, text="Close", command=master.quit)
-        self.close_button.grid(row=4, column=1, columnspan=1)
+        self.close_button.grid(row=6, column=1, columnspan=1)
+        
+        
 
         # Atualiza dados da interface
             # FALTA FAZER            
@@ -122,6 +167,25 @@ class MyFirstGUI:
         self.valor_movimento_label = Label(self.master, text="NÃO!")
         self.valor_movimento_label.grid(row=2, column=1)
 
+    def incrementar_posicaox(self):
+        self.sensor.x += 1
+        self.valor_posicaox_label_num.set(self.sensor.x)
+        self.valor_posicaox_label = Label(self.master, textvariable=self.valor_posicaox_label_num)
+
+    def decrementar_posicaox(self):
+        self.sensor.x -= 1
+        self.valor_posicaox_label_num.set(self.sensor.x)
+        self.valor_posicaox_label = Label(self.master, textvariable=self.valor_posicaox_label_num)
+
+    def incrementar_posicaoy(self):
+        self.sensor.y += 1
+        self.valor_posicaoy_label_num.set(self.sensor.y)
+        self.valor_posicaoy_label = Label(self.master, textvariable=self.valor_posicaoy_label_num)
+
+    def decrementar_posicaoy(self):
+        self.sensor.y -= 1
+        self.valor_posicaoy_label_num.set(self.sensor.y)
+        self.valor_posicaoy_label = Label(self.master, textvariable=self.valor_posicaoy_label_num)
 
 # Rodando
 cpf_sensor = str(input("Digite um CPF para o sensor: "))

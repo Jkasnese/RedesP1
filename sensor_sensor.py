@@ -5,6 +5,7 @@ from enum import Enum
 from sensor_pressao import *
 import random
 import uuid
+from util_protocolo_com import *
 
 # Precisa mudar a pressao pra valores?
 # Falta criar ID unico atraves de uma rede network
@@ -28,8 +29,8 @@ class Sensor:
         self.movimento = bool(random.randint(0,1))
         self.pressao = Pressao(random.randint(0,2))
         self.modificado = False
-        self.x = (-1*tamanho_mundo, tamanho_mundo)
-        self.y = (-1*tamanho_mundo, tamanho_mundo)
+        self.x = random.randint(-1*tamanho_mundo, tamanho_mundo)
+        self.y = random.randint(-1*tamanho_mundo, tamanho_mundo)
 
     @property
     def bpm(self):

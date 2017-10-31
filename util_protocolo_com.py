@@ -1,3 +1,7 @@
+# PORTA DO SERVIDOR PRINCIPAL = A SER DEFINIDA.
+# PORTA DO SERVIDOR DE BORDA = 8081
+
+
 # TODAS AS MENSAGENS DEVERÃO SER TROCADAS EM FORMATO STRING
 
 # COMANDO PROTOCOLO
@@ -9,6 +13,7 @@
     # 5 = Buscar paciente
     # 6 = Selecionar paciente para ser monitorado
     # 7 = Parar monitoramento
+    # 8 = Cadastrar Servidor de Borda
 
     # 9 = Repita mensagem
 
@@ -21,9 +26,10 @@
     #  0!0 Fracasso
 
 # CADASTRAR SENSOR
-    # PRIMEIRA MENSAGEM SENSOR-NUVEM É "CADASTRO(0)ID|X|Y"
-    ## resposta do nuvem->sensor 
-    #
+    # PRIMEIRA MENSAGEM SENSOR-NUVEM É "CADASTRO(0)CPF|ID|X|Y"
+    ## nuvem->borda: CADASTRO(0)CPF|ID|X|Y
+    ## resposta do nuvem->sensor: ip do servidor de borda p/ se conectar
+    ## a partir daí, sensor se conecta ao IP que foi passado.
         
 
 # MENSAGEM SENSOR   
@@ -50,6 +56,10 @@
 
 # PARAR MONITORAMENTO
     # Medico envia: 7CRM
+
+# 8 - CADASTRAR SENSOR DE BORDA
+    # borda -> nuvem: 8IP|X|Y
+    # nuvem -> borda: 0 (ok), != 0 (falhou)
 
 
 

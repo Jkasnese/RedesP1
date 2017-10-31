@@ -33,18 +33,23 @@ def enviarValores(sensor, ip_servidor):
     A partir dai, envia os valores definidos pelo usuario"""
 
     # Comando p/ atualizar dados do sensor
-    mensagem = "1"    
+    mensagem = "1"
+    contador = 0
     while(True):
         time.sleep(1)
+        contador += 1
         if (sensor.modificado == False):
             sensor.gerarValores()
         mensagem = "1" + selecionaValores(sensor)
-        enviarUDP(mensagem, ip_servidor)
+        enviarUDP(mensagem, ip_servidor) # Adicionar TRY/CATCH aqui PENDENTE
         print("Enviado: ", mensagem)
+        # Mecanismo p/ realocar sensor PENDENTE
+        #if (contador%60 == 0): # A cada minuto:
+            #enviarUDP("8" + caracter_separador + sensor.x + caracter_separador + sensor.y)
 
 def cadastrarSensor(sensor, bocal):
     # Define mensagem de cadastro
-    mensagem = "0" + sensor.identificador + caracter_separador + sensor.x + caracter_separador + sensor.y
+    mensagem = "0" + sensor.cpf + caracter_separador + sensor.identificador + caracter_separador + str(sensor.x) + caracter_separador + str(sensor.y)
     resposta = "-1"
     # Tratar melhor caso conexão falhe após X tentativas ou X tempos.
     while (resposta == "-1"):
@@ -55,13 +60,17 @@ def cadastrarSensor(sensor, bocal):
     return resposta
 
 def novoSensor(cpf, ip_servidor, tcp_porta):
+    # Criar novo sensor
     novoSensor = Sensor(cpf)
     novoSensor.gerarValores()
+
     # Cadastrar sensor no servidor. Cria socket e envia cadastro por meio dele até receber confirmação do cadastro
     bocal = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     bocal.connect((ip_servidor, tcp_porta))
     ip_servidor = cadastrarSensor(novoSensor, bocal)
     print("Sensor cadastrado!")
+    ## Fechar porta TCP PENDENTE
+
     # Depois de cadastrado, começar a enviar valores
     threadEnviaValores = Thread(target = enviarValores, args = (novoSensor, ip_servidor), daemon=True)
     threadEnviaValores.start()
