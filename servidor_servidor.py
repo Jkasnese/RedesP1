@@ -78,7 +78,7 @@ class Servidor:
             else:
                 print(" - - - - Executando comando: " + mensagem[0] + " - - - - ")
                 if ('0' == mensagem[0]):
-                    self.cadastrar_sensor_nuvem(mensagem[1:], bocal)
+                    self.cadastrar_sensor_nuvem(mensagem, bocal)
                 elif ('1' == mensagem[0]):
                     self.atualizarSensor(mensagem[1:])
                 elif ('2' == mensagem[0]):
