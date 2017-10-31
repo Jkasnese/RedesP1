@@ -163,7 +163,7 @@ class Servidor_Borda:
         while True: # Sempre executar essa rotina de 1 em 1 minuto
             time.sleep(1)
             contador += 1
-            if (contador == 10): # Caso se passou 60 segundos:
+            if (contador == 10): # Caso se passou XX segundos:
                 contador = 0
                 mensagem = 'A1'
                 # Itera na lista de sensores e coloca sensores em risco na lista
@@ -185,7 +185,9 @@ class Servidor_Borda:
                     # Confere se existe paciente em risco
                     print("Antes de conferir resposta")
                     if ("A1" != mensagem):
+                        print("Dentro do IF ANTES")
                         mensagem = "A0" + mensagem[2:]
+                        print("Dentro do IF DEPOIS")
                     print("Conferiu resposta")    
 
                     # Cadastra na nuvem e confirma p/ usuario
