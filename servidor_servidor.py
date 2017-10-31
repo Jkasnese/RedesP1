@@ -314,7 +314,7 @@ class Servidor:
         pacientes = mensagem[2:].split(separador_pacientes)
 
         # Para cada paciente, armazenar a informação deles no servidor
-	print("Lista de risco: ")
+        print("Lista de risco: ")
         for i in pacientes:
             info_paciente = i.split(caracter_separador) # 0 ID,  1 CPF, 2 BPM, 3 PRESSAO, 4 MOVIMENTO
             print("ID do paciente eh: " + info_paciente[0])
