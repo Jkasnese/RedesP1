@@ -19,19 +19,13 @@ class Servidor_Borda:
 
         # Conecta na nuvem
         self.meu_ip = str(input("Digite o IP externo desta maquina: ")) # Melhorar: pegar o IP da maquina automaticamente. PENDENTE
-        ip_nuvem = str(input("Digite o IP do servidor de nuvem: "))
-        porta_nuvem = int(input("Digite a porta TCP do servidor de nuvem: "))
-        bocal_nuvem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        bocal_nuvem.connect((ip_nuvem, porta_nuvem))
-        resposta = "-1"
+        self.ip_nuvem = str(input("Digite o IP do servidor de nuvem: "))
+        self.porta_nuvem = int(input("Digite a porta TCP do servidor de nuvem: "))
         mensagem = "8" + self.meu_ip + caracter_separador + str(self.x) + caracter_separador + str(self.y)
-        while (resposta == "-1"):
-            resposta = enviar_cadastro_TCP(mensagem, bocal_nuvem)
-            print ("Enviado: ", mensagem)
-            print("Resposta: ", resposta)
+        self.cadastrar_na_nuvem(mensagem)
 
         # Dados
-        self.sensores = {} # Recebe tudo string
+        self.sensores = {} # Recebe tudo string. Chave: ID. Valores: CPF, BPM, PRESSAO, MOVIMENTO, BPM_MAX, BPM_MIN
         self.id_sensores = []
         self.medicos = {} # Index = CRM. ELementos = [nome, senha, thread_monitoramento]
         self.crm_medicos = []
@@ -117,11 +111,6 @@ class Servidor_Borda:
 
         # Adiciona ID do sensor na lista de sensores
         self.id_sensores.append(identificador)
-    
-        # Adiciona endereço do sensor na lista de endereços
-#        endereço_completo = str(endereço) + ";" + str(porta)
-        #self.endereco_sensores.append(endereço_completo)
-        #print("No endereço: ", endereço_completo)
         
         # Resposta ao cadastro
         resposta = '0'
@@ -136,6 +125,11 @@ class Servidor_Borda:
         self.sensores[identificador].bpm = int(mensagem[1])
         self.sensores[identificador].pressao = int(mensagem[2])
         self.sensores[identificador].movimento = bool("True" == mensagem[3])
+        
+        # Armazena valores maximos e minimos de BPM.
+        # Colocar BPM_MAX e BPM_MIN no sensor, fazer sensor enviar esses valores
+        # Enviar apenas esses valores p/ a nuvem quando atualizar a lista
+
         print("Atualizando sensor: " + identificador)
         print("BPM: " + str(self.sensores[identificador].bpm) + " Pressao: " + str(self.sensores[identificador].pressao) + " Movimento: " + str(self.sensores[identificador].movimento))
     
@@ -158,7 +152,8 @@ class Servidor_Borda:
         print("Enviado: " + resposta)
         return        
 
-    """ Envia lista no formato: CPF|BPM|PRESSAO|MOVIMENTO, de acordo com protocolo"""
+    """ Envia lista com o ID dos sensores em risco p/ o servidor.
+        Formato: CPF||PRESSAO|MOVIMENTO, de acordo com protocolo"""
     def enviar_lista_risco(self, mensagem, bocal):
         resposta = '0'
         # Itera na lista de sensores e coloca sensores em risco na lista
@@ -228,10 +223,17 @@ class Servidor_Borda:
         enviar_TCP("Repita mensagem!", bocal)        
         print("Repita mensagem!")
 
-    def funcao_hash(self):
-        return
-            
-            
+    # Cadastra na nuvem o proprio servidor de borda ou a lista de risco
+    # Mensagem vai determinar o que vai ser cadastrado. mensagem[0] == 8 cadastra o servidor. mensagem[0] == 9 cadastra na lista em risco.
+    def cadastrar_na_nuvem(self, mensagem):            
+        bocal_nuvem = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        bocal_nuvem.connect((self.ip_nuvem, self.porta_nuvem))
+        resposta = "-1"
+
+        while (resposta == "-1"):
+            resposta = enviar_cadastro_TCP(mensagem, bocal_nuvem)
+            print ("Enviado: ", mensagem)
+            print("Resposta: ", resposta)
             
             
 servidor = Servidor_Borda()

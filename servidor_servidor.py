@@ -18,6 +18,7 @@ class Servidor:
         # Dados
         self.sensores = {} # Par id:localização
         self.id_sensores = [] # lista com todos os IDs sensores cadastrados
+        self.id_sensores_risco = [] # Lista com todos os sensores que estão em risco. Atualizados pelos servidores de borda.
         self.medicos = {} # Par id:localização
         self.crm_medicos = [] # lista com todos os IDs dos médicos
         self.threads_ouvintes_TCP = {}
