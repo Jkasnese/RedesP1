@@ -169,7 +169,7 @@ class Servidor_Borda:
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
-                    enviar_TCP('1', bocal)
+                    self.cadastrar_na_nuvem('1')
                     return
                 for i in self.id_sensores:
                     bpm = self.sensores[i].bpm
@@ -184,8 +184,7 @@ class Servidor_Borda:
                 # Cadastra na nuvem e confirma p/ usuario
                 self.cadastrar_na_nuvem(resposta)
                 print("")        
-                print("Enviada lista de risco p/ nuvem: " + mensagem)
-                print(resposta)
+                print("Enviada lista de risco p/ nuvem: " + resposta)
                 print("")
                 return
 
