@@ -120,8 +120,13 @@ class Servidor:
             return
 
         # Envia dados do sensor ao servidor de borda
-        bocal_borda = abrirSocketTCP(8081, ip_servidor)
-        enviar_TCP(mensagem, bocal_borda)
+        bocal_borda = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        bocal_borda.connect((ip_servidor, 8081))
+        resposta = "-1"
+        while (resposta == "-1"):
+            resposta = enviar_cadastro_TCP(mensagem, bocal_borda)
+            print ("Enviado: ", mensagem)
+            print("Resposta: ", resposta)
 
         # Envia resposta final do servidor ao sensor, antes de fechar conexão
         enviar_TCP(ip_servidor, bocal)
