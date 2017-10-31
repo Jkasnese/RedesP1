@@ -316,6 +316,7 @@ class Servidor:
         # Para cada paciente, armazenar a informação deles no servidor
         for i in pacientes:
             info_paciente = i.split(caracter_separador) # 0 ID,  1 CPF, 2 BPM, 3 PRESSAO, 4 MOVIMENTO
+            print("ID do paciente eh: " + info_paciente[0])
             self.sensores[info_paciente[0]] = (self.sensores[info_paciente[0]], [info_paciente[1], info_paciente[2], info_paciente[3], info_paciente[4]])
         
         # Responder borda. Conferir se info pacientes realmente foi cadastrado. PENDENTE.
