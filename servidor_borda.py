@@ -169,7 +169,7 @@ class Servidor_Borda:
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
-                    self.cadastrar_na_nuvem('1')
+                    self.cadastrar_na_nuvem('A1')
                     return
                 for i in self.id_sensores:
                     bpm = self.sensores[i].bpm
