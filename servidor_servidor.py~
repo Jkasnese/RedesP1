@@ -311,12 +311,12 @@ class Servidor:
             return
 
         # Separa os pacientes
-        pacientes = mensagem.split(separador_pacientes)
+        pacientes = mensagem[1:].split(separador_pacientes)
 
         # Para cada paciente, armazenar a informação deles no servidor
         for i in pacientes:
             info_paciente = i.split(caracter_separador) # 0 LIXO,  1 ID, 2 CPF, 3 BPM, 4 PRESSAO, 5 MOVIMENTO
-            self.sensores[info_paciente[0]] = (self.sensores[info_paciente[0]], [info_pacientes[1], info_pacientes[2], info_pacientes[3], info_pacientes[4]])
+            self.sensores[info_paciente[1]] = (self.sensores[info_paciente[1]], [info_pacientes[2], info_pacientes[3], info_pacientes[4], info_pacientes[5]])
         
         # Responder borda
         enviar_TCP("0", bocal)

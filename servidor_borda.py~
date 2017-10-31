@@ -165,26 +165,30 @@ class Servidor_Borda:
             contador += 1
             if (contador == 60): # Caso se passou 1 minuto:
                 contador = 0
-                resposta = 'A' + caracter_separador
+                resposta = 'A1'
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
-                    self.cadastrar_na_nuvem('A1')
-                for i in self.id_sensores:
-                    bpm = self.sensores[i].bpm
-                    movimento = self.sensores[i].movimento
-                    if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
-                        resposta += self.sensores[i].identificador + caracter_separador             
-                        resposta += self.sensores[i].cpf + caracter_separador
-                        resposta += str(bpm) + caracter_separador
-                        resposta += str(self.sensores[i].pressao) + caracter_separador
-                        resposta += str(movimento) + separador_pacientes
+                    self.cadastrar_na_nuvem(resposta)
+                else:
+                    for i in self.id_sensores:
+                        bpm = self.sensores[i].bpm
+                        movimento = self.sensores[i].movimento
+                        if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
+                            resposta += self.sensores[i].identificador + caracter_separador             
+                            resposta += self.sensores[i].cpf + caracter_separador
+                            resposta += str(bpm) + caracter_separador
+                            resposta += str(self.sensores[i].pressao) + caracter_separador
+                            resposta += str(movimento) + separador_pacientes
 
-                # Cadastra na nuvem e confirma p/ usuario
-                self.cadastrar_na_nuvem(resposta)
-                print("")        
-                print("Enviada lista de risco p/ nuvem: " + resposta)
-                print("")
+                    # Confere se existe paciente em risco
+                    if ("A1" != resposta):
+                        resposta[1] = "0"    
+                    # Cadastra na nuvem e confirma p/ usuario
+                    self.cadastrar_na_nuvem(resposta)
+                    print("")        
+                    print("Enviada lista de risco p/ nuvem: " + resposta)
+                    print("")
 
 
     """ Recebe CRM|CPF

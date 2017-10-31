@@ -165,11 +165,11 @@ class Servidor_Borda:
             contador += 1
             if (contador == 60): # Caso se passou 1 minuto:
                 contador = 0
-                resposta = 'A' + caracter_separador
+                resposta = 'A1'
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
-                    self.cadastrar_na_nuvem('A1')
+                    self.cadastrar_na_nuvem(resposta)
                 else:
                     for i in self.id_sensores:
                         bpm = self.sensores[i].bpm
@@ -181,6 +181,10 @@ class Servidor_Borda:
                             resposta += str(self.sensores[i].pressao) + caracter_separador
                             resposta += str(movimento) + separador_pacientes
 
+                    # Confere se existe paciente em risco
+                    if ("A1" != resposta):
+                        resposta[1] = "0"
+    
                     # Cadastra na nuvem e confirma p/ usuario
                     self.cadastrar_na_nuvem(resposta)
                     print("")        
