@@ -172,7 +172,6 @@ class Servidor_Borda:
                     self.cadastrar_na_nuvem(mensagem)
                 else:
                     for i in self.id_sensores:
-                        print("Lista de sensores")
                         bpm = self.sensores[i].bpm
                         movimento = self.sensores[i].movimento
                         if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
@@ -183,12 +182,8 @@ class Servidor_Borda:
                             mensagem += str(movimento)
 
                     # Confere se existe paciente em risco
-                    print("Antes de conferir resposta")
                     if ("A1" != mensagem):
-                        print("Dentro do IF ANTES")
                         mensagem = "A0" + mensagem[2:]
-                        print("Dentro do IF DEPOIS")
-                    print("Conferiu resposta")    
 
                     # Cadastra na nuvem e confirma p/ usuario
                     self.cadastrar_na_nuvem(mensagem)
