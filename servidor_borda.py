@@ -170,23 +170,22 @@ class Servidor_Borda:
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
                     self.cadastrar_na_nuvem('A1')
-                    return
-                for i in self.id_sensores:
-                    bpm = self.sensores[i].bpm
-                    movimento = self.sensores[i].movimento
-                    if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
-                        resposta += self.sensores[i].identificador + caracter_separador             
-                        resposta += self.sensores[i].cpf + caracter_separador
-                        resposta += str(bpm) + caracter_separador
-                        resposta += str(self.sensores[i].pressao) + caracter_separador
-                        resposta += str(movimento) + separador_pacientes
+                else:
+                    for i in self.id_sensores:
+                        bpm = self.sensores[i].bpm
+                        movimento = self.sensores[i].movimento
+                        if ( (bpm > 100 and movimento == False) or ( bpm < 40 and movimento == False) ):
+                            resposta += self.sensores[i].identificador + caracter_separador             
+                            resposta += self.sensores[i].cpf + caracter_separador
+                            resposta += str(bpm) + caracter_separador
+                            resposta += str(self.sensores[i].pressao) + caracter_separador
+                            resposta += str(movimento) + separador_pacientes
 
-                # Cadastra na nuvem e confirma p/ usuario
-                self.cadastrar_na_nuvem(resposta)
-                print("")        
-                print("Enviada lista de risco p/ nuvem: " + resposta)
-                print("")
-                return
+                    # Cadastra na nuvem e confirma p/ usuario
+                    self.cadastrar_na_nuvem(resposta)
+                    print("")        
+                    print("Enviada lista de risco p/ nuvem: " + resposta)
+                    print("")
 
 
     """ Recebe CRM|CPF
