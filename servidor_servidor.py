@@ -96,7 +96,7 @@ class Servidor:
                     ip_recebido = self.cadastrar_servidor_borda(mensagem[1:])
                     self.responder_cadastro_borda(ip_recebido, bocal)
                 elif ('A' == mensagem[0]):
-                    self.receber_lista_pacientes_risco(mensagem[1:])
+                    self.receber_lista_pacientes_risco(mensagem[1:], bocal)
                 else:
                     self.repita_mensagem(bocal)
         # Caso saia do while, não está mais escutando. Posso fechar o bocal.
@@ -315,8 +315,8 @@ class Servidor:
 
         # Para cada paciente, armazenar a informação deles no servidor
         for i in pacientes:
-            info_paciente = i.split(caracter_separador) # 0 ID, 1 CPF, 2 BPM, 3 PRESSAO, 4 MOVIMENTO
-            self.sensores[info_paciente[0]] = (self.sensores[info_paciente[0]], [info_pacientes[1], info_pacientes[2], info_pacientes[3], info_pacientes[4]])
+            info_paciente = i.split(caracter_separador) # 0 LIXO,  1 ID, 2 CPF, 3 BPM, 4 PRESSAO, 5 MOVIMENTO
+            self.sensores[info_paciente[1]] = (self.sensores[info_paciente[1]], [info_pacientes[2], info_pacientes[3], info_pacientes[4], info_pacientes[5]])
         
         # Responder borda
         enviar_TCP("0", bocal)

@@ -165,7 +165,7 @@ class Servidor_Borda:
             contador += 1
             if (contador == 60): # Caso se passou 1 minuto:
                 contador = 0
-                resposta = 'A'
+                resposta = 'A' + caracter_separador
                 # Itera na lista de sensores e coloca sensores em risco na lista
                 if not self.id_sensores:
                     print("Nao ha sensores cadastrados no servidor!")
